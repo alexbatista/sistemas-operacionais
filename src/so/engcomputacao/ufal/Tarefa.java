@@ -4,12 +4,18 @@ package so.engcomputacao.ufal;
 
 public class Tarefa implements Comparable<Tarefa> {
 	
+	private int id;
 	private int tempChegada;
 	private int prioridade;
 	private int duracao;
-	private int tempSaida;
-	private int id;
+	private Estado estado = Estado.NOVA;
 	
+	public Estado getEstado() {
+		return estado;
+	}
+	public void setEstado(Estado estado) {
+		this.estado = estado;
+	}
 	public int getId() {
 		return id;
 	}
@@ -41,19 +47,22 @@ public class Tarefa implements Comparable<Tarefa> {
 	@Override
 	public int compareTo(Tarefa outro) {
 		
-		if (this.tempChegada < outro.getTempChegada()) {
-	            return -1;
-	    }
-	    if (this.tempChegada > outro.getTempChegada()) {
-	           return 1;
-	    }
-	    if(this.tempChegada == outro.getTempChegada()){
+	    if((this.tempChegada == outro.getTempChegada()) || (this.estado == Estado.AGUARDANDO)){
 	    	if(this.prioridade > outro.getPrioridade()){
 	    		return -1;
 	    	}else{
 	    		return 1;
 	    	} 	
 	    }
+
+		if (this.tempChegada < outro.getTempChegada()) {
+	            return -1;
+	    }
+		
+	    if (this.tempChegada > outro.getTempChegada()) {
+	           return 1;
+	    }
+	    
 	    return 0;
 	}
 	

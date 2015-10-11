@@ -20,22 +20,21 @@ public class SistemaOperacional {
 	public void escalonarTarefasFCFS(){
 		Collections.sort(filaDeTarefas);
 		
-		System.out.print("tempo ");
-		for(int i = 0; i < filaDeTarefas.size(); i++){
-			System.out.print("P"+i+" ");
-		}
-		System.out.println("");
-		int j = 0;
+		printCabecalho(filaDeTarefas.size());
 		
-		while(!filaDeTarefas.isEmpty()){
-			Tarefa t = filaDeTarefas.get(0);
+		int j = 0;
+		int timer = 0;
+		while(j < filaDeTarefas.size()){
+			Tarefa t = filaDeTarefas.get(j);
 			try { 
-				System.out.println("A tarefa P"+j+" está sendo executada. Cujo tempo de entrada é: "+t.getTempChegada()+" e prioridade: "+t.getPrioridade()+" e dura: "+t.getDuracao());
+				timer +=1;
+				filaDeTarefas.get(j).setEstado(Estado.EXECUTANDO);
+				printTarefas(timer, filaDeTarefas);
 				Thread.sleep(t.getDuracao()*100); 
 			} catch(InterruptedException ex) {
 			    Thread.currentThread().interrupt();
 			}finally{
-				filaDeTarefas.remove(0);
+				filaDeTarefas.get(j).setEstado(Estado.CONCLUIDA);
 				j++;
 			}
 		}
@@ -48,55 +47,42 @@ public class SistemaOperacional {
 
 		//ORDENAÇÃO E IMPRESSÃO NA TELA
 		Collections.sort(filaDeTarefas);
-//		List<Tarefa> tarefasExecutando = new ArrayList<Tarefa>();
-		
 		System.out.print("tempo ");
 		for(int i = 0; i < filaDeTarefas.size(); i++){
 			System.out.print("P"+i+" ");
 		}
 		
 		System.out.println("");
-		
-		//INICIO A FILA DE TAREFAS A SEREM EXECUTADAS
-//		tarefasExecutando.add(tarefas.get(0));
-//		tarefas.remove(0);
+
 		
 		Tarefa tarefaExecutando = filaDeTarefas.get(0);
 		filaDeTarefas.remove(tarefaExecutando);
+		System.out.println("Timer: "+timer);
 		
 		while(!filaDeTarefas.isEmpty()){
 			try {
-				System.out.println("A tarefa P"+tarefaExecutando.getId()+" está sendo executada. Cujo tempo de entrada é: "+tarefaExecutando.getTempChegada()+", tempo de saída é: "+tarefaExecutando.getTempSaida()+" e prioridade: "+tarefaExecutando.getPrioridade()+" e dura: "+tarefaExecutando.getDuracao());
+				tarefaExecutando.setEstado(Estado.EXECUTANDO);
+				System.out.println("A tarefa P"+tarefaExecutando.getId()+" está sendo executada. Cujo tempo de entrada é: "+tarefaExecutando.getTempChegada()+" e prioridade: "+tarefaExecutando.getPrioridade()+" e dura: "+tarefaExecutando.getDuracao());
 				//Quantum de 2 segundos
 				timer += 2;
 				Thread.sleep(2*1000); 
 				System.out.println("Timer: "+timer);
-						
-//				if(tarefaExecutando.getTempSaida() <= timer){
-//					System.out.println("Tarefa P"+tarefaExecutando.getId()+" removida da lista.");
-//					filaDeTarefas.remove(tarefaExecutando);
-////					tarefaExecutando = filaDeTarefas.get(0);
-////					tarefaExecutando.setTempChegada(timer);
-//				}
+				
+				if(tarefaExecutando.getTempSaida() > timer){
+					tarefaExecutando.setDuracao(tarefaExecutando.getDuracao()-(timer-tarefaExecutando.getTempChegada()));
+					tarefaExecutando.setEstado(Estado.AGUARDANDO);
+					filaDeTarefas.add(tarefaExecutando);
+				}else{
+					System.out.println("Tarefa P"+tarefaExecutando.getId()+" foi concluída.");
+				}
 				
 				Collections.sort(filaDeTarefas);
-//				for(Tarefa tarefa : filaDeTarefas){
-					if(filaDeTarefas.get(0).getTempChegada() <= timer){
-//						if(tarefa.getPrioridade() > tarefaExecutando.getPrioridade()){
-						if(tarefaExecutando.getTempSaida() > timer){
-							tarefaExecutando.setDuracao(tarefaExecutando.getDuracao()-(tarefaExecutando.getTempSaida()-tarefaExecutando.getTempChegada()));
-							filaDeTarefas.add(tarefaExecutando);
-						}else{
-							System.out.println("Tarefa P"+tarefaExecutando.getId()+" foi concluída.");
-						}
-							tarefaExecutando = filaDeTarefas.get(0);
-							tarefaExecutando.setTempChegada(timer);
-//						}
-					}
+				
+//				if(filaDeTarefas.get(0).getTempChegada() <= timer){
+					tarefaExecutando = filaDeTarefas.get(0);
+					tarefaExecutando.setTempChegada(timer);
+					filaDeTarefas.remove(0);
 //				}
-				
-				
-				
 								
 			} catch(InterruptedException ex) {
 			    Thread.currentThread().interrupt();
@@ -106,6 +92,28 @@ public class SistemaOperacional {
 		}
 		
 		System.out.println("-------------- Fim da Execução do RR ------------------------");
+	}
+	
+	public void printCabecalho(int numTarefas){
+		System.out.print("tempo  ");
+		for(int i = 1; i<= numTarefas; i++){
+			System.out.print("P"+i+"  ");
+		}
+		System.out.println("");
+	}
+	public void printTarefas(int timer,List<Tarefa> tarefas){
+		System.out.print(" "+(timer-1)+"-"+timer+" ");
+		for(Tarefa tarefa : tarefas){
+			if(tarefa.getEstado() == Estado.NOVA)
+				System.out.print("  ");
+			if(tarefa.getEstado() == Estado.EXECUTANDO)
+				System.out.print("  ## ");
+			if(tarefa.getEstado() == Estado.AGUARDANDO)
+				System.out.print(" -- ");
+			if(tarefa.getEstado() == Estado.CONCLUIDA)
+				System.out.print("    ");
+		}
+		System.out.println("");
 	}
 
 }
