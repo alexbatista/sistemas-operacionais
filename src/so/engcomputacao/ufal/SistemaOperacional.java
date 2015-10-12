@@ -25,17 +25,18 @@ public class SistemaOperacional {
 		int j = 0;
 		int timer = 0;
 		while(j < filaDeTarefas.size()){
-			Tarefa t = filaDeTarefas.get(j);
 			try { 
 				timer +=1;
 				filaDeTarefas.get(j).setEstado(Estado.EXECUTANDO);
 				printTarefas(timer, filaDeTarefas);
-				Thread.sleep(t.getDuracao()*100); 
+				Thread.sleep(1000); 
 			} catch(InterruptedException ex) {
 			    Thread.currentThread().interrupt();
 			}finally{
-				filaDeTarefas.get(j).setEstado(Estado.CONCLUIDA);
-				j++;
+				if(filaDeTarefas.get(j).getTempSaida() <= timer){
+					filaDeTarefas.get(j).setEstado(Estado.CONCLUIDA);
+					j++;
+				}
 			}
 		}
 		
@@ -95,7 +96,7 @@ public class SistemaOperacional {
 	}
 	
 	public void printCabecalho(int numTarefas){
-		System.out.print("tempo  ");
+		System.out.print("tempo   ");
 		for(int i = 1; i<= numTarefas; i++){
 			System.out.print("P"+i+"  ");
 		}
@@ -106,7 +107,14 @@ public class SistemaOperacional {
 		
 		List<String> estados = new ArrayList<String>(tarefas.size());
 		
-		System.out.print(" "+(timer-1)+"-"+timer+" ");
+		if(timer < 10){
+			System.out.print(" "+(timer-1)+"-"+timer+"  ");
+		}else if (timer == 10){
+			System.out.print(" "+(timer-1)+"-"+timer+" ");
+		}
+		else{
+			System.out.print(" "+(timer-1)+"-"+timer+"");
+		}
 		for(Tarefa tarefa : tarefas){
 			
 			if(tarefa.getEstado() == Estado.NOVA)
