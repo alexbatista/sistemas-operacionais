@@ -101,18 +101,32 @@ public class SistemaOperacional {
 		}
 		System.out.println("");
 	}
+	
 	public void printTarefas(int timer,List<Tarefa> tarefas){
+		
+		List<String> estados = new ArrayList<String>(tarefas.size());
+		
 		System.out.print(" "+(timer-1)+"-"+timer+" ");
 		for(Tarefa tarefa : tarefas){
+			
 			if(tarefa.getEstado() == Estado.NOVA)
-				System.out.print("  ");
+				estados.add(tarefa.getId(),"  ");
+
 			if(tarefa.getEstado() == Estado.EXECUTANDO)
-				System.out.print("  ## ");
+				estados.add(tarefa.getId(),"  ##  ");
+
 			if(tarefa.getEstado() == Estado.AGUARDANDO)
-				System.out.print(" -- ");
+				estados.add(tarefa.getId()," -- ");
+
 			if(tarefa.getEstado() == Estado.CONCLUIDA)
-				System.out.print("    ");
+				estados.add(tarefa.getId(),"    ");
+
 		}
+		
+		for(int i = 0; i< estados.size(); i++){
+			System.out.print(estados.get(i));
+		}
+		
 		System.out.println("");
 	}
 
