@@ -35,7 +35,7 @@ public class SistemaOperacional {
 			}finally{
 				if(filaDeTarefas.get(j).getTempSaida() <= timer){
 					filaDeTarefas.get(j).setEstado(Estado.CONCLUIDA);
-					j++;
+					j++;	
 				}
 			}
 		}
@@ -108,20 +108,20 @@ public class SistemaOperacional {
 		List<String> estados = new ArrayList<String>(tarefas.size());
 		
 		if(timer < 10){
-			System.out.print(" "+(timer-1)+"-"+timer+"  ");
+			System.out.print(" "+(timer-1)+"-"+timer+"   ");
 		}else if (timer == 10){
-			System.out.print(" "+(timer-1)+"-"+timer+" ");
+			System.out.print(" "+(timer-1)+"-"+timer+"  ");
 		}
 		else{
-			System.out.print(" "+(timer-1)+"-"+timer+"");
+			System.out.print(" "+(timer-1)+"-"+timer+" ");
 		}
 		for(Tarefa tarefa : tarefas){
 			
 			if(tarefa.getEstado() == Estado.NOVA)
-				estados.add(tarefa.getId(),"  ");
+				estados.add(tarefa.getId(),"    ");
 
 			if(tarefa.getEstado() == Estado.EXECUTANDO)
-				estados.add(tarefa.getId(),"  ##  ");
+				estados.add(tarefa.getId()," ## ");
 
 			if(tarefa.getEstado() == Estado.AGUARDANDO)
 				estados.add(tarefa.getId()," -- ");
