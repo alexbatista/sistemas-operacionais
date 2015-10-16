@@ -1,6 +1,14 @@
 package so.engcomputacao.ufal;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +61,7 @@ public class SistemaOperacional {
 		System.out.println("----------- Fim da execução do FCFS -------------------");
 	}
 
-	public void rr() throws IOException {
+	public void rr() {
 
 		int t = 0;
 		int p = 0;
@@ -65,57 +73,68 @@ public class SistemaOperacional {
 
 		while (tempoTotal > t) {
 
-			for (Tarefa tarefa : filaDeTarefas) {
-				if (tarefa.getTempChegada() == t) {
-					tarefa.setEstado(Estado.PRONTA);
-				}
-			}
+			alteraEstado(t);
 
 			if (filaDeTarefas.get(p).getEstado() != Estado.CONCLUIDA) {
 
 				if (filaDeTarefas.get(p).getTempoExecutado() < filaDeTarefas.get(p).getDuracao()) {
 
 					filaDeTarefas.get(p).setEstado(Estado.EXECUTANDO);
+
 					for (int i = 0; i < 2; i++) {
-						filaDeTarefas.get(p).setTempoExecutado(filaDeTarefas.get(p).getTempoExecutado() + 1);
+						filaDeTarefas.get(p).setTempoExecutado(1);
 						t = t + 1;
 						printTarefas(t, filaDeTarefas);
+						alteraEstado(t);
+						if (filaDeTarefas.get(p).getTempoExecutado() == filaDeTarefas.get(p).getDuracao()) {
+							filaDeTarefas.get(p).setEstado(Estado.CONCLUIDA);
+							break;
+
+						}
 
 					}
-					if (filaDeTarefas.get(p).getTempoExecutado() == filaDeTarefas.get(p).getDuracao()) {
-						filaDeTarefas.get(p).setEstado(Estado.CONCLUIDA);
 
-					} else {
+					if(filaDeTarefas.get(p).getEstado() != Estado.CONCLUIDA){
 						filaDeTarefas.get(p).setEstado(Estado.PRONTA);
 					}
 
 				}
-				p++;
-				p = p % filaDeTarefas.size();
+				// p = p % filaDeTarefas.size();
 			}
+			if (p < (filaDeTarefas.size() - 1)) {
+				p++;
+			} else {
+				p = 0;
+			}
+
 		}
 
 	}
 
 	public void printCabecalho(int numTarefas) {
-		System.out.print("tempo   ");
-		for (int i = 1; i <= numTarefas; i++) {
-			System.out.print("P" + i + "  ");
+		OutputStream os;
+
+		try {
+			os = new FileOutputStream("output.txt", true);
+			OutputStreamWriter osw = new OutputStreamWriter(os);
+			BufferedWriter bw = new BufferedWriter(osw);
+			bw.write("Tempo   ");
+			for (int i = 1; i <= numTarefas; i++) {
+				bw.write(("P" + i) + "  ");
+			}
+			bw.newLine();
+			bw.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		System.out.println("");
+
 	}
 
 	public void printTarefas(int timer, List<Tarefa> tarefas) {
 
 		List<String> estados = new ArrayList<String>(Collections.nCopies(tarefas.size(), ""));
 
-		if (timer < 10) {
-			System.out.print(" " + (timer - 1) + "-" + timer + "   ");
-		} else if (timer == 10) {
-			System.out.print(" " + (timer - 1) + "-" + timer + "  ");
-		} else {
-			System.out.print(" " + (timer - 1) + "-" + timer + " ");
-		}
 		for (Tarefa tarefa : tarefas) {
 
 			if (tarefa.getEstado() == Estado.EXECUTANDO)
@@ -130,11 +149,11 @@ public class SistemaOperacional {
 			if (tarefa.getEstado() == Estado.NOVO)
 				estados.add(tarefa.getId(), "    ");
 
+			estados.remove((tarefa.getId() + 1));
+
 		}
 
-		for (int i = 0; i < estados.size(); i++) {
-			System.out.print(estados.get(i));
-		}
+		escreverNaSaida(estados, timer);
 
 		System.out.println("");
 	}
@@ -145,6 +164,92 @@ public class SistemaOperacional {
 			tempoTotal += tarefa.getDuracao();
 		}
 		return tempoTotal;
+
+	}
+
+	/*************************************************************************************************/
+	public void escreverNaSaida(List<String> str, int timer) {
+
+		OutputStream os;
+
+		String texto = null;
+
+		if (timer < 10) {
+			texto = " " + (timer - 1) + "-" + timer + "   ";
+		} else if (timer == 10) {
+			texto = " " + (timer - 1) + "-" + timer + "  ";
+		} else {
+			texto = " " + (timer - 1) + "-" + timer + " ";
+		}
+
+		try {
+			os = new FileOutputStream("output.txt", true);
+			OutputStreamWriter osw = new OutputStreamWriter(os);
+			BufferedWriter bw = new BufferedWriter(osw);
+			for (String string : str) {
+				texto += string;
+			}
+			bw.write(texto);
+			bw.newLine();
+			bw.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void alteraEstado(int t){
+		
+		for (Tarefa tarefa : filaDeTarefas) {
+			if ((tarefa.getTempChegada() == (t - 1) || tarefa.getTempChegada() == t) && tarefa.getEstado() != Estado.EXECUTANDO) {
+				tarefa.setEstado(Estado.PRONTA);
+			}
+		}
+	}
+	
+	public static List<Tarefa> lerDoArquivo(String arquivo) {
+
+		int i;
+		int j = 0;
+		String[] novaString = new String[3];
+		String linha = null;
+		List<Tarefa> listaDeTarefas = new ArrayList<Tarefa>();
+
+		FileInputStream entrada;
+		try {
+			entrada = new FileInputStream(arquivo);
+			InputStreamReader entradaFormatada = new InputStreamReader(entrada);
+			BufferedReader br = new BufferedReader(entradaFormatada);
+
+			linha = br.readLine();
+
+			while (linha != null) {
+				novaString = linha.split(" ");
+
+				Tarefa tarefa = new Tarefa();
+				tarefa.setId(j);
+				tarefa.setTempChegada(Integer.parseInt(novaString[0]));
+				tarefa.setDuracao(Integer.parseInt(novaString[1]));
+				tarefa.setPrioridade(Integer.parseInt(novaString[2]));
+				listaDeTarefas.add(tarefa);
+				linha = br.readLine();
+				j++;
+
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		for (Tarefa tarefa : listaDeTarefas) {
+			System.out.println(tarefa.getId());
+			System.out.println(tarefa.getTempChegada());
+			System.out.println(tarefa.getDuracao());
+			System.out.println(tarefa.getPrioridade());
+		}
+
+		return listaDeTarefas;
 
 	}
 

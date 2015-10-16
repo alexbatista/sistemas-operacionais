@@ -55,7 +55,7 @@ public class Tarefa implements Comparable<Tarefa> {
 	@Override
 	public int compareTo(Tarefa outro) {
 		
-	    if((this.tempChegada == outro.getTempChegada()) || (this.estado == Estado.PRONTA)){
+	    if((this.tempChegada == outro.getTempChegada())){
 	    	if(this.prioridade > outro.getPrioridade()){
 	    		return -1;
 	    	}else{
