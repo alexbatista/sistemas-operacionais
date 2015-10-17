@@ -58,7 +58,6 @@ public class SistemaOperacional {
 
 		}
 
-		System.out.println("----------- Fim da execução do FCFS -------------------");
 	}
 
 	public void rr() {
@@ -155,7 +154,6 @@ public class SistemaOperacional {
 
 		escreverNaSaida(estados, timer);
 
-		System.out.println("");
 	}
 
 	public int tempoTotal(List<Tarefa> tarefas) {
@@ -240,13 +238,6 @@ public class SistemaOperacional {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		for (Tarefa tarefa : listaDeTarefas) {
-			System.out.println(tarefa.getId());
-			System.out.println(tarefa.getTempChegada());
-			System.out.println(tarefa.getDuracao());
-			System.out.println(tarefa.getPrioridade());
 		}
 
 		return listaDeTarefas;

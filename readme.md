@@ -14,5 +14,7 @@ Entre na pasta src (no linux: cd src/)
 
 salve o arquivo de input dentro da pasta src e rode o comando abaixo
 
-java so.engcomputacao.ufal.Principal input.txt
+java so.engcomputacao.ufal.Principal input.txt fcfs (para executar o FCFS)
+
+java so.engcomputacao.ufal.Principal input.txt rr (para executar o Round-Robin)
 
