@@ -113,15 +113,17 @@ public class SistemaOperacional {
 
 	public void printCabecalho(int numTarefas) {
 		OutputStream os;
-
+		String cabecalho = "Tempo   ";
 		try {
 			os = new FileOutputStream("output.txt", true);
 			OutputStreamWriter osw = new OutputStreamWriter(os);
 			BufferedWriter bw = new BufferedWriter(osw);
-			bw.write("Tempo   ");
+			
 			for (int i = 1; i <= numTarefas; i++) {
-				bw.write(("P" + i) + "  ");
+				cabecalho += "P" + i + "  ";
 			}
+			
+			bw.write(cabecalho);
 			bw.newLine();
 			bw.close();
 		} catch (Exception e) {
@@ -138,18 +140,16 @@ public class SistemaOperacional {
 		for (Tarefa tarefa : tarefas) {
 
 			if (tarefa.getEstado() == Estado.EXECUTANDO)
-				estados.add(tarefa.getId(), " ## ");
+				estados.set(tarefa.getId(), " ## ");
 
 			if (tarefa.getEstado() == Estado.PRONTA)
-				estados.add(tarefa.getId(), " -- ");
+				estados.set(tarefa.getId(), " -- ");
 
 			if (tarefa.getEstado() == Estado.CONCLUIDA)
-				estados.add(tarefa.getId(), "    ");
+				estados.set(tarefa.getId(), "    ");
 
 			if (tarefa.getEstado() == Estado.NOVO)
-				estados.add(tarefa.getId(), "    ");
-
-			estados.remove((tarefa.getId() + 1));
+				estados.set(tarefa.getId(), "    ");
 
 		}
 
