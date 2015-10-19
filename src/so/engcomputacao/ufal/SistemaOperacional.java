@@ -21,6 +21,7 @@ public class SistemaOperacional {
 
 	private List<Tarefa> filaDeTarefas = new ArrayList<Tarefa>();
 
+
 	public SistemaOperacional(List<Tarefa> tarefas) {
 		this.filaDeTarefas = tarefas;
 	}
@@ -136,19 +137,22 @@ public class SistemaOperacional {
 
 		List<String> estados = new ArrayList<String>(Collections.nCopies(tarefas.size(), ""));
 
-		for (Tarefa tarefa : tarefas) {
+		
+			
+			for (int i = 0; i < tarefas.size(); i++) {
+				
 
-			if (tarefa.getEstado() == Estado.EXECUTANDO)
-				estados.set(tarefa.getId(), " ## ");
+			if (tarefas.get(i).getEstado() == Estado.EXECUTANDO)
+				estados.set(i, " ## ");
 
-			if (tarefa.getEstado() == Estado.PRONTA)
-				estados.set(tarefa.getId(), " -- ");
+			if (tarefas.get(i).getEstado() == Estado.PRONTA)
+				estados.set(i, " -- ");
 
-			if (tarefa.getEstado() == Estado.CONCLUIDA)
-				estados.set(tarefa.getId(), "    ");
+			if (tarefas.get(i).getEstado() == Estado.CONCLUIDA)
+				estados.set(i, "    ");
 
-			if (tarefa.getEstado() == Estado.NOVO)
-				estados.set(tarefa.getId(), "    ");
+			if (tarefas.get(i).getEstado() == Estado.NOVO)
+				estados.set(i, "    ");
 
 		}
 
