@@ -2,8 +2,8 @@ PASSOS PARA EXECUÇÃO DO PROGRAMA
 
 O processo para executar o programa se divide em duas partes:
 
-1. COMPILAÇÃO
-2. EXECUÇÃO DO PROGRAMA
+1- COMPILAÇÃO
+2- EXECUÇÃO DO PROGRAMA
 
 
 1. COMPILAÇÃO:
