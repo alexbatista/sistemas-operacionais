@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//http://stackoverflow.com/questions/3342651/how-can-i-delay-a-java-program-for-a-few-seconds
-
 public class SistemaOperacional {
-
+	
+	/**
+	 * Tempo total de execução de todas as tarefas*/
 	private int tempoTotal = 0;
 
 	private List<Tarefa> filaDeTarefas = new ArrayList<Tarefa>();
@@ -31,6 +31,10 @@ public class SistemaOperacional {
 	}
 
 	public void escalonarTarefasFCFS() {
+		/**
+		 * Ordena a fila das tarefas de acordo com o tempo de 
+		 * chegada, caso for igual, ele compara a prioridade
+		 * */
 		Collections.sort(filaDeTarefas);
 
 		printCabecalho(filaDeTarefas.size());
@@ -80,12 +84,15 @@ public class SistemaOperacional {
 				if (filaDeTarefas.get(p).getTempoExecutado() < filaDeTarefas.get(p).getDuracao()) {
 
 					filaDeTarefas.get(p).setEstado(Estado.EXECUTANDO);
-
+					
+					/**O quantum de 2 segundos é simulado por esse for*/
 					for (int i = 0; i < 2; i++) {
 						filaDeTarefas.get(p).setTempoExecutado(1);
 						t = t + 1;
 						printTarefas(t, filaDeTarefas);
 						alteraEstado(t);
+						/**Verifica se a tarefa terminou a execução, caso positivo
+						 * muda o estado dela para concluido*/
 						if (filaDeTarefas.get(p).getTempoExecutado() == filaDeTarefas.get(p).getDuracao()) {
 							filaDeTarefas.get(p).setEstado(Estado.CONCLUIDA);
 							break;
@@ -99,8 +106,9 @@ public class SistemaOperacional {
 					}
 
 				}
-				// p = p % filaDeTarefas.size();
 			}
+			/**P é o valor usado para percorrer a lista que contem as tarefas,
+			 * e esta verificação é feita para evitar o acesso a um indice maior que o da lista*/
 			if (p < (filaDeTarefas.size() - 1)) {
 				p++;
 			} else {
@@ -110,7 +118,10 @@ public class SistemaOperacional {
 		}
 
 	}
-
+	/**
+	 * Imprime o cabeçalho do arquivo de saída(input.txt),
+	 * ordenado por ordem de chegada.
+	 * */
 	public void printCabecalho(int numTarefas) {
 		OutputStream os;
 		String cabecalho = "Tempo   ";
@@ -133,8 +144,16 @@ public class SistemaOperacional {
 
 	}
 
+	/**
+	 * Imprime a cada segundo o estado das tarefas, ou seja, 
+	 * imprime os caracteres(conforme definido na especificação do trabalho) indicando
+	 * se a tarefa naquele instante está executando, pronta, concluida ou nova*/
 	public void printTarefas(int timer, List<Tarefa> tarefas) {
 
+		/**
+		 * cria e inicializa a lista(com a string "") onde é guardada os caracteres
+		 * que serão imprimidos no arquivo de saída.
+		 * */
 		List<String> estados = new ArrayList<String>(Collections.nCopies(tarefas.size(), ""));
 
 		
@@ -159,7 +178,9 @@ public class SistemaOperacional {
 		escreverNaSaida(estados, timer);
 
 	}
-
+	/**
+	 * Calcula e retorna a soma do tempo de execução das tarefas.
+	 * */
 	public int tempoTotal(List<Tarefa> tarefas) {
 
 		for (Tarefa tarefa : tarefas) {
@@ -168,14 +189,20 @@ public class SistemaOperacional {
 		return tempoTotal;
 
 	}
-
-	/*************************************************************************************************/
+	/**
+	 * Escreve no arquivo de saída os caracteres contidos na lista(str)
+	 * no instante "timer".
+	 * */
 	public void escreverNaSaida(List<String> str, int timer) {
 
 		OutputStream os;
 
 		String texto = null;
-
+		/**
+		 * verificação feita com a finalidade de deixar o arquivo
+		 * de saída bem formatado, ou seja, imprimir o caracter que indica
+		 * o estado da tarefa na mesma coluna da tarefa.
+		 * */
 		if (timer < 10) {
 			texto = " " + (timer - 1) + "-" + timer + "   ";
 		} else if (timer == 10) {
@@ -199,7 +226,10 @@ public class SistemaOperacional {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 *Faz a verificação a cada segundo se ingressou uma nova tarefa,
+	 *caso positivo, muda o estado da tarefa para pronta.
+	 **/
 	public void alteraEstado(int t){
 		
 		for (Tarefa tarefa : filaDeTarefas) {
@@ -208,6 +238,12 @@ public class SistemaOperacional {
 			}
 		}
 	}
+	
+	/**
+	 * Le do arquivo de entrada linha por linha, e cria as tarefas
+	 * de acordo com os dados desse arquivo e coloca-os dentro de uma lista.
+	 * 
+	 * */
 	
 	public static List<Tarefa> lerDoArquivo(String arquivo) {
 
@@ -222,9 +258,10 @@ public class SistemaOperacional {
 			entrada = new FileInputStream(arquivo);
 			InputStreamReader entradaFormatada = new InputStreamReader(entrada);
 			BufferedReader br = new BufferedReader(entradaFormatada);
-
+			/**Lendo arquivo linha por linha,
+			 * e usa os dados para criar as tarefas.
+			 * */
 			linha = br.readLine();
-
 			while (linha != null) {
 				novaString = linha.split(" ");
 
