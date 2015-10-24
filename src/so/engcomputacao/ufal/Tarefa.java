@@ -1,7 +1,5 @@
 package so.engcomputacao.ufal;
 
-//http://blog.caelum.com.br/ordenando-colecoes-com-comparable-e-comparator/
-
 public class Tarefa implements Comparable<Tarefa> {
 	
 	private int id;
@@ -9,9 +7,15 @@ public class Tarefa implements Comparable<Tarefa> {
 	private int prioridade;
 	private int duracao;
 	private int tempoExecutado = 0;
+	
+	/**
+	 * Retorna o tempo total que a tarefa executou*/
 	public int getTempoExecutado() {
 		return tempoExecutado;
 	}
+	
+	/**
+	 * Incrementa o tempo executado de acordo com o valor passado no parâmetro*/
 	public void setTempoExecutado(int tempoExecutado) {
 		this.tempoExecutado += tempoExecutado;
 	}

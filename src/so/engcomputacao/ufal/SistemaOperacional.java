@@ -3,9 +3,7 @@ package so.engcomputacao.ufal;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -15,10 +13,6 @@ import java.util.List;
 
 public class SistemaOperacional {
 
-	/**
-	 * Tempo total de execução de todas as tarefas
-	 */
-	private int tempoTotal = 0;
 
 	private List<Tarefa> filaDeTarefas = new ArrayList<Tarefa>();
 	private List<Tarefa> filaDeProntas = new ArrayList<Tarefa>();
@@ -38,138 +32,127 @@ public class SistemaOperacional {
 		 */
 		Collections.sort(filaDeTarefas);
 
+		/*Função que escreve o cabeçalho no arquivo*/
 		printCabecalho(filaDeTarefas.size());
 
+		/*j representa o índice da tarefa que está sendo executada*/
 		int j = 0;
+		
+		/*Representa a quantidade de tarefas com estado CONCLUIDA*/
+		int tarefasConcluidas = 0;
+		
+		/*timer representa o tempo*/
 		int timer = 0;
 
-		while (j < filaDeTarefas.size()) {
+		/*Enquanto houver tarefas não concluídas, faça:*/
+		while (tarefasConcluidas < filaDeTarefas.size()) {
 
+			/*Verifico se no tempo atual, chegou alguma tarefa para ser executada, se sim, jogo na fila de tarefas prontas*/
 			for (Tarefa tarefa : filaDeTarefas) {
 				if (tarefa.getTempChegada() == timer) {
 					tarefa.setEstado(Estado.PRONTA);
 
 				}
 			}
+			
+			if (filaDeTarefas.get(j).getTempChegada() <= timer) {
+				filaDeTarefas.get(j).setEstado(Estado.EXECUTANDO);
+				filaDeTarefas.get(j).setTempoExecutado(1);
+			}
 			timer += 1;
-
-			filaDeTarefas.get(j).setEstado(Estado.EXECUTANDO);
-			filaDeTarefas.get(j).setTempoExecutado(1);
 			printTarefas(timer, filaDeTarefas);
 
-			if (filaDeTarefas.get(j).getTempoExecutado() == filaDeTarefas.get(j).getDuracao()) {
+			/*Verifico se o tempo de duração da tarefa já foi concluído, se sim, seto o estado para CONCLUIDA*/
+			if (filaDeTarefas.get(j).getTempoExecutado() >= filaDeTarefas
+					.get(j).getDuracao()) {
 				filaDeTarefas.get(j).setEstado(Estado.CONCLUIDA);
 				j++;
+				tarefasConcluidas++;
 			}
 
 		}
 
 	}
 
-	public void rr() {
 
-		int t = 0;
-		int p = 0;
+	public void roundRobin() {
+		
+		/*representa o tempo*/
+		int timer = 0;
+		
+		/*Quantum de 2s para cada tarefa*/
+		int quantum = 0;
+		
+		/*Representa a quantidade de tarefas com estado CONCLUIDA*/
 		int tarefasTerminadas = 0;
-		tempoTotal = tempoTotal(filaDeTarefas);
 
+		/*Escreve o cabeçalho no arquivo*/
 		printCabecalho(filaDeTarefas.size());
 
+		
+		/*
+		 * Ordena a fila das tarefas de acordo com o tempo de chegada, caso for
+		 * igual, ele compara a prioridade
+		 */
 		Collections.sort(filaDeTarefas);
 
+		/*Enquanto a quantidade tarefas CONCLUIDAS for menor que a quantidade total de tarefas, faça: */
 		while (tarefasTerminadas < filaDeTarefas.size()) {
-
-			alteraEstado(t);
-
-			if (filaDeTarefas.get(p).getEstado() == Estado.PRONTA) {
-
-				/** O quantum de 2 segundos é simulado por esse for */
-				for (int i = 0; i < 2; i++) {
-					filaDeTarefas.get(p).setEstado(Estado.EXECUTANDO);
-					filaDeTarefas.get(p).setTempoExecutado(1);
-					t = t + 1;
-					printTarefas(t, filaDeTarefas);
-					alteraEstado(t);
-					/**
-					 * Verifica se a tarefa terminou a execução, caso positivo
-					 * muda o estado dela para concluido
-					 */
-					if (filaDeTarefas.get(p).getTempoExecutado() >= filaDeTarefas.get(p).getDuracao()) {
-						filaDeTarefas.get(p).setEstado(Estado.CONCLUIDA);
-						tarefasTerminadas++;
-						break;
-					} else {
-						filaDeTarefas.get(p).setEstado(Estado.PRONTA);
-					}
-
-				}
-
-				/**
-				 * P é o valor usado para percorrer a lista que contem as
-				 * tarefas, e esta verificação é feita para evitar o acesso a um
-				 * indice maior que o da lista
-				 */
-				if (p < (filaDeTarefas.size() - 1)) {
-					p++;
-				} else {
-					p = 0;
-				}
-
-			} else {
-				t = t + 1;
-				printTarefas(t, filaDeTarefas);
-			}
-		}
-
-	}
-
-	public void rr2() {
-
-		int t = 0;
-		int p = 0;
-		int tarefasTerminadas = 0;
-		tempoTotal = tempoTotal(filaDeTarefas);
-
-		printCabecalho(filaDeTarefas.size());
-
-		Collections.sort(filaDeTarefas);
-
-		while (tarefasTerminadas < filaDeTarefas.size()) {
-
-			alteraEstado(t);
 			
-			if(!filaDeProntas.isEmpty()){
-				
-				if(filaDeProntas.get(p).getEstado().equals(Estado.PRONTA)){
-
-				for (int i = 0; i < 2; i++) {
-					filaDeProntas.get(p).setEstado(Estado.EXECUTANDO);
-					filaDeProntas.get(p).setTempoExecutado(1);
-					t = t + 1;
-					printTarefas(t, filaDeProntas);
-					alteraEstado(t);
-	
-					if (filaDeProntas.get(p).getTempoExecutado() >= filaDeProntas.get(p).getDuracao()) {
-						filaDeProntas.get(p).setEstado(Estado.CONCLUIDA);
-						filaDeProntas.remove(p);
-						tarefasTerminadas++;
-						break;
-					} else {
-						filaDeTarefas.get(p).setEstado(Estado.PRONTA);
-						filaDeProntas.add(filaDeProntas.get(p));
-						filaDeProntas.remove(p);
+			/*Se alguma tarefa está executando*/
+			if (tarefaExecutando() > -1) {
+				int index = tarefaExecutando();
+				if (filaDeTarefas.get(index).getTempoExecutado() >= filaDeTarefas
+						.get(index).getDuracao()) {
+					filaDeTarefas.get(index).setEstado(Estado.CONCLUIDA);
+					tarefasTerminadas++;
+				} else {
+					if (quantum == 2) {
+						filaDeTarefas.get(index).setEstado(Estado.PRONTA);
+						filaDeProntas.add(filaDeTarefas.get(index));
 					}
+				}
 
-				}
-				}
 			}
 
-			} else {
-				t = t + 1;
-				printTarefas(t, filaDeTarefas);
+			/*Verifico se alguma nova tarefa chegou, se sim, seto o estado PRONTA nesta tarefa*/
+			alterarEstadoParaPronta(timer);
+
+			/*Se não existe tarefa executando e existem tarefas na fila de prontas*/
+			if (tarefaExecutando() == -1 && filaDeProntas.size() > 0) {
+				quantum = 0;
+				int i = filaDeTarefas.indexOf(filaDeProntas.get(0));
+				filaDeTarefas.get(i).setEstado(Estado.EXECUTANDO);
+				filaDeProntas.remove(0);
 			}
+			
+			/*Se existe tarefa executando, retorno o índice da tarefa e incremento seu tempo de execução*/
+			if (tarefaExecutando() > -1)
+				filaDeTarefas.get(tarefaExecutando()).setTempoExecutado(1);
+
+			quantum++;
+			timer++;
+			printTarefas(timer, filaDeTarefas);
+
 		}
+	}
 
+	/** Função que retorna o índice na lista da tarefa com estado EXECUTANDO. Caso não haja tarefa executando, retorna -1*/
+	public int tarefaExecutando() {
+		for (int i = 0; i < filaDeTarefas.size(); i++) {
+			if (filaDeTarefas.get(i).getEstado().equals(Estado.EXECUTANDO))
+				return i;
+		}
+		return -1;
+	}
+
+	/** Função que retorna o índice na lista da tarefa com estado PRONTA. Caso não haja tarefa pronta, retorna -1 */
+	public int tarefaPronta() {
+		for (int j = 0; j < filaDeTarefas.size(); j++) {
+			if (filaDeTarefas.get(j).getEstado().equals(Estado.PRONTA))
+				return j;
+		}
+		return -1;
 	}
 
 	/**
@@ -185,7 +168,7 @@ public class SistemaOperacional {
 			BufferedWriter bw = new BufferedWriter(osw);
 
 			for (int i = 1; i <= numTarefas; i++) {
-				cabecalho += "P" + i + "  ";
+				cabecalho += " P" + i + "   ";
 			}
 
 			bw.write(cabecalho);
@@ -209,21 +192,22 @@ public class SistemaOperacional {
 		 * cria e inicializa a lista(com a string "") onde é guardada os
 		 * caracteres que serão imprimidos no arquivo de saída.
 		 */
-		List<String> estados = new ArrayList<String>(Collections.nCopies(tarefas.size(), ""));
+		List<String> estados = new ArrayList<String>(Collections.nCopies(
+				tarefas.size(), ""));
 
 		for (int i = 0; i < tarefas.size(); i++) {
 
 			if (tarefas.get(i).getEstado() == Estado.EXECUTANDO)
-				estados.set(i, " ## ");
+				estados.set(i, "  ##  ");
 
 			if (tarefas.get(i).getEstado() == Estado.PRONTA)
-				estados.set(i, " -- ");
+				estados.set(i, "  --  ");
 
 			if (tarefas.get(i).getEstado() == Estado.CONCLUIDA)
-				estados.set(i, "    ");
+				estados.set(i, "      ");
 
 			if (tarefas.get(i).getEstado() == Estado.NOVO)
-				estados.set(i, "    ");
+				estados.set(i, "      ");
 
 		}
 
@@ -231,17 +215,6 @@ public class SistemaOperacional {
 
 	}
 
-	/**
-	 * Calcula e retorna a soma do tempo de execução das tarefas.
-	 */
-	public int tempoTotal(List<Tarefa> tarefas) {
-
-		for (Tarefa tarefa : tarefas) {
-			tempoTotal += tarefa.getDuracao();
-		}
-		return tempoTotal;
-
-	}
 
 	/**
 	 * Escreve no arquivo de saída os caracteres contidos na lista(str) no
@@ -285,7 +258,7 @@ public class SistemaOperacional {
 	 * Faz a verificação a cada segundo se ingressou uma nova tarefa, caso
 	 * positivo, muda o estado da tarefa para pronta.
 	 **/
-	public void alteraEstado(int t) {
+	public void alterarEstadoParaPronta(int t) {
 
 		for (Tarefa tarefa : filaDeTarefas) {
 			if ((tarefa.getTempChegada() == (t - 1) || tarefa.getTempChegada() == t)
@@ -305,7 +278,6 @@ public class SistemaOperacional {
 
 	public static List<Tarefa> lerDoArquivo(String arquivo) {
 
-		int i;
 		int j = 0;
 		String[] novaString = new String[3];
 		String linha = null;
